@@ -1,0 +1,18 @@
+{
+	"BSCTEST": {
+		"nodeAddress": "https://data-seed-prebsc-1-s1.binance.org:8545",
+		"chainId": 97,
+		"interface": "EVM",
+		"abi": ""
+	},
+	"MUMBAI": {
+		"nodeAddress": "https://polygon-testnet.blastapi.io/38a248ff-baca-4a46-81cb-b188786053ab",
+		"chainId": 80001,
+		"interface": "EVM"
+	},
+	"SEPOLIA": {
+		"nodeAddress": "https://sepolia.infura.io/v3/94ebec44ffc34501898dd5dccf387f81",
+		"chainId": 11155111,
+		"interface": "EVM"
+	}
+}
