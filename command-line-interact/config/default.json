@@ -1,18 +1,18 @@
 {
-	"BSCTEST": {
-		"nodeAddress": "https://data-seed-prebsc-1-s1.binance.org:8545",
-		"chainId": 97,
-		"interface": "EVM",
-		"abi": ""
-	},
-	"MUMBAI": {
-		"nodeAddress": "https://polygon-testnet.blastapi.io/38a248ff-baca-4a46-81cb-b188786053ab",
-		"chainId": 80001,
+	"CHAIN1": {
+		"nodeAddress": "http://127.0.0.1:8546",
+		"chainId": 1337,
+		"abi": "./res/MainStarport.json",
+		"starportContractAddress": "0x9b4e383192a089C8177f5E1293FC037956Cfd884",
+		"crossChainContractAddress": "0x4a41672e9a217C3193b12483400b03CE1851e145",
 		"interface": "EVM"
 	},
-	"SEPOLIA": {
-		"nodeAddress": "https://sepolia.infura.io/v3/94ebec44ffc34501898dd5dccf387f81",
-		"chainId": 11155111,
+	"CHAIN2": {
+		"nodeAddress": "http://127.0.0.1:8547",
+		"chainId": 1337,
+		"abi": "./res/Starport.json",
+		"starportContractAddress": "0x9b4e383192a089C8177f5E1293FC037956Cfd884",
+		"crossChainContractAddress": "0x4a41672e9a217C3193b12483400b03CE1851e145",
 		"interface": "EVM"
 	}
 }

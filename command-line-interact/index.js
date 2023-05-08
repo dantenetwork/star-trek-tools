@@ -51,7 +51,7 @@ async function registerDestnContract(chainName) {
   }
 
   // Register contract info for sending messages to other chains
-  await ethereum.sendTransaction(web3, netConfig.chainId, contract, 'registerDestnContract', testAccountPrivateKey,
+  await ethereum.sendTransaction(web3, netConfig.chainId, contract, 'registerDestContract', testAccountPrivateKey,
     [METHOD_KEY_NAME, chainName, destConfig[CONTRACT_KEY_NAME], interface[destConfig.interface][METHOD_KEY_NAME]]);
 }
 
@@ -88,6 +88,10 @@ async function getStarports() {
   return await ethereum.contractCall(contract, 'starports', []);
 }
 
+async function settleReward(shipID) {
+  await ethereum.sendTransaction(web3, netConfig.chainId, contract, 'settleReward', testAccountPrivateKey, [shipID]);
+}
+
 (async function () {
   function list(val) {
     return val.split(',')
@@ -99,14 +103,15 @@ async function getStarports() {
       .option('-r, --register <chain name>,<dest chain name>', 'Register destination chain contract', list)
       .option('-t, --trek <chain name>,<ship ID>,<receiver>,<dest chain name>', 'Trek the ship to another starport', list)
       .option('-g, --get <chain name>,<ship ID>', 'Get ship information', list)
-      .option('-s, --synthesize <ship ID>,<amount>', 'Synthesize diamonds', list)
+      .option('-s, --synthesize <chain name>,<ship ID>,<amount>', 'Synthesize diamonds', list)
       .option('-b, --balance <chain name>,<account>', 'Get diamond balance', list)
       .option('-c, --create <chain name>,<to>,<ship type>', 'Create a starship', list)
-      .option('-d, --diamon <chain name>', 'Get some diamond for testing', list)
-      .option('-ss, --set-starports <chain name>,<galaxy>|<starport>...', 'Set starports', list)
+      .option('-d, --diamond <chain name>', 'Get some diamond for testing', list)
+      .option('-ss, --set-starports <chain name>,"<galaxy>|<starport>..."', 'Set starports', list)
       .option('-sp, --starports <chain name>', 'Get starports', list)
+      .option('-st, --settle <ship ID>', 'Settle rewards', list)
       .parse(process.argv);
-
+console.log(program.opts())
   if (program.opts().initialize) {
       if (!init(program.opts().initialize)) {
           return;
@@ -145,7 +150,7 @@ async function getStarports() {
         return;
     }
     let ret = await getShipInfo(program.opts().get[1]);
-    console.log('Ship info', ret);
+    console.log('Ship info', JSON.stringify(ret));
   }
   else if (program.opts().synthesize) {
       if (program.opts().synthesize.length != 3) {
@@ -181,41 +186,43 @@ async function getStarports() {
     }
     await createStarship(program.opts().create[1], program.opts().create[2]);
   }
-  else if (program.opts()['set-starports']) {
-      if (program.opts()['set-starports'].length != 2) {
-          console.log('2 arguments are needed, but ' + program.opts()['set-starports'].length + ' provided');
+  else if (program.opts()['setStarports']) {
+      if (program.opts()['setStarports'].length < 2) {
+          console.log('At least 2 arguments are needed');
           return;
       }
       
-      if (!init(program.opts()['set-starports'][0])) {
+      if (!init(program.opts()['setStarports'][0])) {
           return;
       }
 
       let starports = [];
-        let param = program.opts()['set-starports'].slice(1);
-        for (let i = 0; i < param.length; i++) {
-            let m = param[i].split('|');
-            starports.push({
-                galaxy: m[0],
-                starportId: m[1]
-            });
-        }
+      let param = program.opts()['setStarports'].slice(1);
+      for (let i = 0; i < param.length; i++) {
+          let m = param[i].split('|');
+          starports.push({
+              galaxy: m[0],
+              starportId: m[1]
+          });
+      }
+      console.log('starports', starports)
       await setStarports(starports);
   }
   else if (program.opts().starports) {
-      if (program.opts().starports.length != 2) {
-          console.log('2 arguments are needed, but ' + program.opts().starports.length + ' provided');
+      if (program.opts().starports.length != 1) {
+          console.log('1 arguments are needed, but ' + program.opts().starports.length + ' provided');
           return;
       }
       
       if (!init(program.opts().starports[0])) {
           return;
       }
-      await getStarports();
+      let ret = await getStarports();
+      console.log('starports', ret);
   }
   else if (program.opts().diamond) {
-      if (program.opts().diamond.length != 2) {
-          console.log('2 arguments are needed, but ' + program.opts().diamond.length + ' provided');
+      if (program.opts().diamond.length != 1) {
+          console.log('1 arguments are needed, but ' + program.opts().diamond.length + ' provided');
           return;
       }
       
@@ -223,5 +230,16 @@ async function getStarports() {
           return;
       }
       await getDiamond();
+  }
+  else if (program.opts().settle) {
+      if (program.opts().settle.length != 2) {
+          console.log('2 arguments are needed, but ' + program.opts().settle.length + ' provided');
+          return;
+      }
+      
+      if (!init(program.opts().settle[0])) {
+          return;
+      }
+      await settleReward(program.opts().settle[1]);
   }
 }());
